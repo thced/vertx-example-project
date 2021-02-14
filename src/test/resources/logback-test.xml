@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false">
+
+  <conversionRule conversionWord="vcl" converterClass="io.reactiverse.contextual.logging.LogbackConverter"/>
+
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%t] [%vcl{correlationId:-n/a}] %-5level %logger{1} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="metrics" level="off" />
+
+  <root level="warn">
+    <appender-ref ref="stdout"/>
+  </root>
+</configuration>

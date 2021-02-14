@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false">
+
+  <conversionRule conversionWord="vcl" converterClass="io.reactiverse.contextual.logging.LogbackConverter"/>
+
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%t] [%vcl{correlationId:-n/a}] %-5level %logger{1} - %msg%n</pattern>
+    </encoder>
+
+    <!-- For demo purpose, this encoder is disabled - it outputs JSON instead of regular logging -->
+    <!--
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <charset>UTF-8</charset>
+      <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+        <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
+        <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
+        <appendLineSeparator>true</appendLineSeparator>
+        <includeContextName>false</includeContextName>
+        <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+          <prettyPrint>${LOGBACK_PRETTY_PRINT:-false}</prettyPrint>
+        </jsonFormatter>
+      </layout>
+    </encoder>
+    -->
+  </appender>
+
+  <!-- Turn off metrics -->
+  <!--<logger name="metrics" level="off" />-->
+
+  <root level="${LOGBACK_ROOT_LEVEL:-info}">
+    <appender-ref ref="stdout"/>
+  </root>
+</configuration>

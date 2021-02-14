@@ -1,0 +1,143 @@
+= Vert.x Example Project
+
+image:https://img.shields.io/badge/vert.x-4.0.2-purple.svg[link="https://vertx.io"]
+
+== Building
+
+To launch tests:
+
+[source]
+----
+$ mvn clean verify
+----
+
+To package application:
+
+[source]
+----
+$ mvn clean package
+----
+
+== Purpose
+
+The purpose of this template project is to ease the development when starting out with Vert.x.
+Best practices can be gathered and channeled into this project to further improve the code in the
+future.
+
+== Contributing
+
+Contributions to this project are very much welcome!
+
+== Versioning
+
+Versioning is handled by https://www.conventionalcommits.org/[Conventional Commits]. Please follow this when contributing to this project.
+
+== Concepts
+
+=== ApplicationLauncher
+
+The `ApplicationLauncher` is what we use to start up the application. It will set some
+properties to adjust the logging framework, etc. This needs to  be determined before Vert.x starts
+up, and there are appropriate hooks in this class to solve this.
+
+Metrics is configured in this class (via `MetricsSupport`), and defaults to DropWizard.
+
+=== Application
+
+This is the class that is responsible for deploying what is the actual application. It first
+fetches the configuration for the application (via ConfigurationRetriever`).
+This class is also used to deploy Verticles that are independent, meaning they do not have a
+direct dependency to another Verticle to be able to start up.
+
+=== ApiRouter
+
+This class is responsible for the OpenAPI endpoints, basically called "Router". It ties OpenAPI
+schema together with `Handlers`, that handles requests.
+
+=== Cache
+
+The Cache demonstrates the use of SPI which fits Vert.x quite nicely. It will dynamically load the
+implementation of a Cache (`SmallCache`), and to switch to another implementation, one can change the
+implementation in `resources/META-INF/services/se.thced.api.example.Cache` to point to the
+`LargeCache` instead.
+
+=== PreProcessor
+
+Also a demonstration of SPI usage, where we dynamically apply all the found processors to the
+"entity" before we persist into our `Cache`.
+
+=== Health check
+
+This example application shows the concept of `health checks`, and is used to expose endpoints
+where the status of the whole application can be determined. Implementors needs to consider if a
+health check is viable for that particular Verticle or not.
+
+The `HealthChecksProvider` holds "checks" - these are run when visiting the endpoint `/health`, result is returned as JSON to the caller.
+
+There are two endpoints for healthy checks; the `/alive` which basically just tells if the API is up.
+The `/health` returns all configured checks in the system.
+
+=== Hazelcast
+
+The configuration file for Hazelcast is located in the resource folder; `cluster.xml`
+
+=== Configuration
+
+* ConfigurationKeys - This enum should contain all the possible configurations that can be overridden via hot-reload. It is essentially a whitelist to reduce the number of visible envVars.
+
+The application configuration file is available in `conf/config.properties`. All the configuration
+should be set using snake_case and upper-case. The reason for this is to support envVars on multiple platforms.
+
+=== Logging
+
+The logging framework in the application is logback/slf4j.
+
+The application uses `contextual logging` to decorate log statements. This is convenient and necessary approach when multiple verticles handles a request and the need to trace the request exists.
+
+Logging level can be changed by supplying an environment variable `LOGBACK_ROOT_LEVEL=TRACE`.
+
+== Running the application
+
+To run the application, you need *JDK 11* installed and the `JAVA_HOME` environmental variable set.
+
+
+
+=== Running in IntelliJ IDEA
+
+There are two launchers available:
+
+* `ApplicationLauncher` launches a stand-alone version.
+* `ApplicationLauncher (clustered)` launches the version that uses Hazelcast for a clustered setup.
+
+=== Running in Eclipse IDE
+
+=== Running in terminal
+
+[source]
+----
+$ java -jar vertx-example-project-1.0.0-SNAPSHOT.jar
+----
+
+You can also have Maven start the application (clustered), which might be more convenient:
+
+[source]
+----
+$ mvn exec:java
+
+No Maven installed? Use:
+
+$ mvnw exec:java
+----
+
+== Docker
+
+The project uses https://github.com/GoogleContainerTools/jib[Jib] to produce a Docker-image. The image is built using `adoptopenjdk/openjdk11:alpine-jre` as a base.
+
+The image is named and tagged using the `${project.artifactId}` and `${project.version}` respectively.
+
+The image creation is not connected to any Maven lifecycle so to build the image locally:
+
+[source]
+----
+$ mvn compile jib:dockerBuild
+----
