@@ -26,7 +26,9 @@
   </appender>
 
   <!-- Turn off metrics -->
-  <!--<logger name="metrics" level="off" />-->
+  <logger name="metrics" level="off" />
+
+  <logger name="io.vertx.core.impl.launcher.commands.VertxIsolatedDeployer" level="off" />
 
   <root level="${LOGBACK_ROOT_LEVEL:-info}">
     <appender-ref ref="stdout"/>

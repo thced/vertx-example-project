@@ -44,7 +44,10 @@ public class CorrelationIdDecoratingHandler implements Handler<RoutingContext> {
     ContextualData.put(CORRELATION_ID.toString(), correlationId);
 
     // Send correlation id back to client again
-    ctx.addHeadersEndHandler(v -> ctx.response().putHeader(CORRELATION_ID, correlationId));
+    ctx.addHeadersEndHandler(
+        v ->
+            ctx.response()
+                .putHeader(CORRELATION_ID, ContextualData.get(CORRELATION_ID.toString())));
 
     ctx.next();
   }

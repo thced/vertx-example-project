@@ -43,6 +43,8 @@ public class ApiRouter extends AbstractVerticle {
    */
   private static final AtomicBoolean logSemaphore = new AtomicBoolean(true);
 
+  private static final AtomicBoolean logStartSemaphore = new AtomicBoolean(true);
+
   /** Available in config.properties */
   private static final String PORT = "API_HTTP_PORT";
 
@@ -50,7 +52,12 @@ public class ApiRouter extends AbstractVerticle {
   public void start(Promise<Void> startPromise) {
     router()
         .compose(this::startServer)
-        .onSuccess(port -> log.info("API served on port {}", port))
+        .onSuccess(
+            port -> {
+              if (logStartSemaphore.compareAndSet(true, false)) {
+                log.info("API served on port {}", port);
+              }
+            })
         .<Void>mapEmpty()
         .onComplete(startPromise);
   }
